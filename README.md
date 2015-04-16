@@ -37,6 +37,12 @@ router.dispose();
 
 Create a new router, mapping path strings to handler functions. Handler functions can optionally return an instance of `Rx.Disposable`, which will be automatically disposed when the route is changed or the containing router is disposed.
 
+## TODO
+
+* History API
+* Node.js routing
+* URL parameters
+
 ## License
 
 MIT
