@@ -1,4 +1,4 @@
-# router-rx [![Build Status](https://travis-ci.org/lipsmack/router-rx.svg?branch=master)](https://travis-ci.org/lipsmack/router-rx) [![Dependencies Status](https://david-dm.org/lipsmack/router-rx.svg)](https://david-dm.org/lipsmack/router-rx)
+# router-rx [![Build Status](https://travis-ci.org/lipsmack/router-rx.svg?branch=master)](https://travis-ci.org/lipsmack/router-rx) [![Dependencies Status](https://david-dm.org/lipsmack/router-rx.svg)](https://david-dm.org/lipsmack/router-rx) [![npm version](https://badge.fury.io/js/router-rx.svg)](http://badge.fury.io/js/router-rx)
 
 A simple application router built around reactive principles.
 
