@@ -1,6 +1,11 @@
 import { jsdom } from "jsdom";
 import { Observable, Scheduler, Subject } from "rx";
-import { getURLPath, observeHashChange, createRouter } from "../src";
+import {
+    compileRoutes,
+    createRouter,
+    getURLPath,
+    matchRoute,
+    observeHashChange } from "../src";
 
 global.window = jsdom("<html><body></body></html>").defaultView;
 global.document = window.document;
@@ -52,6 +57,34 @@ export default {
             .forEach(path => test.equal(path, expected.shift()));
     },
 
+    testMatchRoute(test) {
+        var a = () => {};
+        var b = () => {};
+        var c = () => {};
+
+        var routes = compileRoutes({
+            "/": a,
+            "/foo/bar": b,
+            "/foo/:id": c
+        });
+
+        var paths = [
+            { value: "/", expected: a },
+            { value: "/foo/bar", expected: b },
+            { value: "/foo/quux", expected: c },
+            { value: "/bar", expected: undefined },
+            { value: "/foo/?!$+^/", expected: c }
+        ];
+
+        while (paths.length) {
+            let path = paths.shift();
+            let handler = matchRoute(routes, path.value);
+            test.equal(path.expected, handler);
+        }
+
+        test.done();
+    },
+
     testCreateRouter(test) {
         var spy = new Subject();
 
@@ -64,12 +97,14 @@ export default {
 
         var router = createRouter({
             "/": partial(spy, "onNext"),
-            "/foo/123": partial(spy, "onNext"),
-            "/bar/123": partial(spy, "onNext")
+            "/foo/:id": partial(spy, "onNext"),
+            "/bar/:id": partial(spy, "onNext")
         });
 
         var paths = [
+            "/invalid/path",
             "/foo/123",
+            "/invalid/path",
             "/bar/123"
         ];
 
