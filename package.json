@@ -1,0 +1,19 @@
+{
+  "name": "router-rx",
+  "version": "1.0.0",
+  "description": "Router powered by Rx",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "node ./bin/test"
+  },
+  "author": "Gary Chambers <gary@lipsmack.co.uk>",
+  "license": "MIT",
+  "dependencies": {
+    "rx": "^2.5.2"
+  },
+  "devDependencies": {
+    "babel": "^5.1.10",
+    "jsdom": "^5.0.0",
+    "nodeunit": "^0.9.1"
+  }
+}

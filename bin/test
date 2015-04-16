@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+process.env.NODE_ENV = "test";
+
+var nodeunit = require("nodeunit");
+var path = require("path");
+var reporter = nodeunit.reporters.default;
+
+require("babel/register");
+
+reporter.run([
+    path.join(__dirname, "../test")
+]);

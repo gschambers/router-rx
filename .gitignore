@@ -1,0 +1,10 @@
+# DEPENDENCIES
+node_modules
+
+# BUILD
+lib
+
+# TEMP / LOGGING
+npm-debug.log
+.DS_Store
+._*
