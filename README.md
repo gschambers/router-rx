@@ -14,7 +14,7 @@ _**Note:** router-rx currently only implements browser routing via hashChange. H
 import { createRouter } from "router-rx";
 import { Disposable } from "rx";
 
-var handler = function() {
+var handler = function(id) {
     // ...
 
     // Optional. Disposed on route change or tear down
@@ -24,7 +24,8 @@ var handler = function() {
 };
 
 var router = createRouter({
-    "/": handler
+    "/": handler,
+    "/foo/:id": handler
 });
 
 // Tear down when finished
@@ -41,7 +42,6 @@ Create a new router, mapping path strings to handler functions. Handler function
 
 * History API
 * Node.js routing
-* URL parameters
 
 ## License
 

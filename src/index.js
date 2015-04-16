@@ -16,7 +16,7 @@ export var compileRoutes = function(routes) {
         var handler = routes[path];
 
         path = path
-            .replace(PARAM, "[^/]+")
+            .replace(PARAM, "([^/]+)")
             .replace(TRAILING_SLASHES, "/*");
 
         var pattern = new RegExp(`^${path}$`);
@@ -47,32 +47,39 @@ export var observeHashChange = function() {
  * @internal
  * @param {[RegExp, Function]} routes
  * @param {String}
- * @return {Function?}
+ * @return {Array}
  */
 export var matchRoute = function(routes, path) {
-    var route = routes.find(route => {
-        return route[0].test(path);
-    });
+    var i = 0;
+    var len = routes.length;
 
-    if (route) {
-        return route[1];
+    while (i < len) {
+        let [ pattern, fn ] = routes[i];
+        let match = pattern.exec(path);
+
+        if (match) {
+            return [fn].concat(match.slice(1));
+        }
+
+        i++;
     }
 };
 
 /**
- * @param {Function} handler
+ * @param {Array} handler
  * @return {Boolean}
  */
 var isValidHandler = function(handler) {
-    return typeof handler === "function";
+    return Array.isArray(handler) &&
+        typeof handler[0] === "function";
 };
 
 /**
- * @param {[RegExp, Function]} routes
+ * @param {Object<String, Function>} routes
  * @return {Rx.Disposable}
  */
 export var createRouter = function(routes) {
-    var route = new SerialDisposable();
+    var active = new SerialDisposable();
 
     routes = compileRoutes(routes);
 
@@ -81,11 +88,12 @@ export var createRouter = function(routes) {
             .map(path => matchRoute(routes, path))
             .filter(isValidHandler)
             .forEach(handler => {
-                route.setDisposable(handler());
+                var [ fn, ...args ] = handler;
+                active.setDisposable(fn(...args));
             });
 
     return new CompositeDisposable(
         subscription,
-        route
+        active
     );
 };

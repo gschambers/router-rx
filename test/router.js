@@ -79,7 +79,7 @@ export default {
         while (paths.length) {
             let path = paths.shift();
             let handler = matchRoute(routes, path.value);
-            test.equal(path.expected, handler);
+            test.equal(path.expected, handler && handler[0]);
         }
 
         test.done();
@@ -88,12 +88,20 @@ export default {
     testCreateRouter(test) {
         var spy = new Subject();
 
-        spy.take(3).subscribeOnCompleted(
-            () => {
-                router.dispose();
-                test.done();
-            }
-        );
+        var expected = [
+            undefined,
+            "123",
+            "456"
+        ];
+
+        var done = function() {
+            router.dispose();
+            test.done();
+        };
+
+        spy.take(3)
+            .doOnCompleted(done)
+            .forEach(val => test.equal(val, expected.shift()));
 
         var router = createRouter({
             "/": partial(spy, "onNext"),
@@ -105,7 +113,7 @@ export default {
             "/invalid/path",
             "/foo/123",
             "/invalid/path",
-            "/bar/123"
+            "/bar/456"
         ];
 
         Observable.from(paths)
