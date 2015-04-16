@@ -1,6 +1,6 @@
 {
   "name": "router-rx",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Router powered by Rx",
   "main": "lib/index.js",
   "scripts": {
@@ -8,6 +8,10 @@
   },
   "author": "Gary Chambers <gary@lipsmack.co.uk>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lipsmack/router-rx.git"
+  },
   "dependencies": {
     "rx": "^2.5.2"
   },
