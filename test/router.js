@@ -7,7 +7,7 @@ import {
     matchRoute,
     observeHashChange } from "../src";
 
-global.window = jsdom("<html><body></body></html>").defaultView;
+global.window = jsdom("<html><body></body></html>").parentWindow;
 global.document = window.document;
 global.location = window.location;
 

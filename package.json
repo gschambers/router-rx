@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "babel": "^5.1.10",
-    "jsdom": "^5.0.0",
+    "jsdom": "^3.0.0",
     "nodeunit": "^0.9.1"
   }
 }
