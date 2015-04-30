@@ -14,7 +14,7 @@ _**Note:** router-rx currently only implements browser routing via hashChange. H
 import { createRouter } from "router-rx";
 import { Disposable } from "rx";
 
-var handler = function(id) {
+const handler = function(id) {
     // ...
 
     // Optional. Disposed on route change or tear down
@@ -23,7 +23,7 @@ var handler = function(id) {
     });
 };
 
-var router = createRouter({
+const router = createRouter({
     "/": handler,
     "/foo/:id": handler
 });

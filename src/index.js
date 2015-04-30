@@ -11,15 +11,15 @@ const TRAILING_SLASHES = /\/*$/;
  * @param {Object<String, Function>} routes
  * @return {Array<[RegExp, Function]>}
  */
-export var compileRoutes = function(routes) {
+export const compileRoutes = function(routes) {
     return Object.keys(routes).map(path => {
-        var handler = routes[path];
+        const handler = routes[path];
 
         path = path
             .replace(PARAM, "([^/]+)")
             .replace(TRAILING_SLASHES, "/*");
 
-        var pattern = new RegExp(`^${path}$`);
+        const pattern = new RegExp(`^${path}$`);
 
         return [pattern, handler];
     });
@@ -29,7 +29,7 @@ export var compileRoutes = function(routes) {
  * @internal
  * @return {String}
  */
-export var getURLPath = function() {
+export const getURLPath = function() {
     return location.hash.replace(/^#!?\/*/, "/");
 };
 
@@ -37,7 +37,7 @@ export var getURLPath = function() {
  * @internal
  * @return {Rx.Observable}
  */
-export var observeHashChange = function() {
+export const observeHashChange = function() {
     return Observable.fromEvent(window, "hashchange")
         .map(getURLPath)
         .startWith(getURLPath());
@@ -49,9 +49,9 @@ export var observeHashChange = function() {
  * @param {String}
  * @return {Array}
  */
-export var matchRoute = function(routes, path) {
-    var i = 0;
-    var len = routes.length;
+export const matchRoute = function(routes, path) {
+    let i = 0;
+    const len = routes.length;
 
     while (i < len) {
         let [ pattern, fn ] = routes[i];
@@ -69,7 +69,7 @@ export var matchRoute = function(routes, path) {
  * @param {Array} handler
  * @return {Boolean}
  */
-var isValidHandler = function(handler) {
+const isValidHandler = function(handler) {
     return Array.isArray(handler) &&
         typeof handler[0] === "function";
 };
@@ -78,17 +78,17 @@ var isValidHandler = function(handler) {
  * @param {Object<String, Function>} routes
  * @return {Rx.Disposable}
  */
-export var createRouter = function(routes) {
-    var active = new SerialDisposable();
+export const createRouter = function(routes) {
+    const active = new SerialDisposable();
 
     routes = compileRoutes(routes);
 
-    var subscription =
+    const subscription =
         observeHashChange()
             .map(path => matchRoute(routes, path))
             .filter(isValidHandler)
             .forEach(handler => {
-                var [ fn, ...args ] = handler;
+                const [ fn, ...args ] = handler;
                 active.setDisposable(fn(...args));
             });
 

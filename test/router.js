@@ -11,7 +11,7 @@ global.window = jsdom("<html><body></body></html>").parentWindow;
 global.document = window.document;
 global.location = window.location;
 
-var partial = function(obj, method, ...args) {
+const partial = function(obj, method, ...args) {
     return obj[method].bind(obj, ...args);
 };
 
@@ -41,7 +41,7 @@ export default {
     },
 
     testObserveHashChange(test) {
-        var expected = [
+        const expected = [
             "/",
             "/foo/123",
             "/bar/123"
@@ -58,17 +58,17 @@ export default {
     },
 
     testMatchRoute(test) {
-        var a = () => {};
-        var b = () => {};
-        var c = () => {};
+        const a = () => {};
+        const b = () => {};
+        const c = () => {};
 
-        var routes = compileRoutes({
+        const routes = compileRoutes({
             "/": a,
             "/foo/bar": b,
             "/foo/:id": c
         });
 
-        var paths = [
+        const paths = [
             { value: "/", expected: a },
             { value: "/foo/bar", expected: b },
             { value: "/foo/quux", expected: c },
@@ -86,15 +86,15 @@ export default {
     },
 
     testCreateRouter(test) {
-        var spy = new Subject();
+        const spy = new Subject();
 
-        var expected = [
+        const expected = [
             undefined,
             "123",
             "456"
         ];
 
-        var done = function() {
+        const done = function() {
             router.dispose();
             test.done();
         };
@@ -103,13 +103,13 @@ export default {
             .doOnCompleted(done)
             .forEach(val => test.equal(val, expected.shift()));
 
-        var router = createRouter({
+        const router = createRouter({
             "/": partial(spy, "onNext"),
             "/foo/:id": partial(spy, "onNext"),
             "/bar/:id": partial(spy, "onNext")
         });
 
-        var paths = [
+        const paths = [
             "/invalid/path",
             "/foo/123",
             "/invalid/path",
