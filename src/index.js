@@ -97,3 +97,8 @@ export const createRouter = function(routes) {
         active
     );
 };
+
+/** @param {String} path */
+export const redirect = function(path) {
+    location.hash = path;
+};

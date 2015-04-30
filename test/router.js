@@ -5,7 +5,8 @@ import {
     createRouter,
     getURLPath,
     matchRoute,
-    observeHashChange } from "../src";
+    observeHashChange,
+    redirect } from "../src";
 
 global.window = jsdom("<html><body></body></html>").parentWindow;
 global.document = window.document;
@@ -119,5 +120,30 @@ export default {
         Observable.from(paths)
             .observeOn(Scheduler.timeout)
             .forEach(path => location.hash = path);
+    },
+
+    testRedirect(test) {
+        const spy = new Subject();
+
+        const expected = [
+            undefined,
+            "123"
+        ];
+
+        const done = function() {
+            router.dispose();
+            test.done();
+        };
+
+        spy.take(2)
+            .doOnCompleted(done)
+            .forEach(val => test.equal(val, expected.shift()));
+
+        const router = createRouter({
+            "/": partial(spy, "onNext"),
+            "/foo/:id": partial(spy, "onNext")
+        });
+
+        redirect("/foo/123");
     }
 };
