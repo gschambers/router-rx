@@ -11,11 +11,11 @@ _**Note:** router-rx currently only implements browser routing via hashChange. H
 ## Usage
 
 ```javascript
-import { createRouter } from "router-rx";
+import { createRouter, redirect } from "router-rx";
 import { Disposable } from "rx";
 
 const handler = function(id) {
-    // ...
+    // Do something
 
     // Optional. Disposed on route change or tear down
     return Disposable.create(function() {
@@ -24,7 +24,8 @@ const handler = function(id) {
 };
 
 const router = createRouter({
-    "/": handler,
+    "/": redirect("/foo"),
+    "/foo": handler,
     "/foo/:id": handler
 });
 
@@ -37,6 +38,10 @@ router.dispose();
 `Disposable createRouter( Object<String, Function> );`
 
 Create a new router, mapping path strings to handler functions. Handler functions can optionally return an instance of `Rx.Disposable`, which will be automatically disposed when the route is changed or the containing router is disposed.
+
+`Function redirect( String path, Boolean invoke );`
+
+Create a handler function that redirects to a specified `path`. If `invoke` is true, the handler is called immediately.
 
 ## TODO
 
