@@ -98,7 +98,18 @@ export const createRouter = function(routes) {
     );
 };
 
-/** @param {String} path */
-export const redirect = function(path) {
-    location.hash = path;
+/**
+ * @param {String} path
+ * @param {Boolean} invoke
+ */
+export const redirect = function(path, invoke=false) {
+    const controller = function() {
+        location.hash = path;
+    };
+
+    if (!invoke) {
+        return controller;
+    }
+
+    controller();
 };

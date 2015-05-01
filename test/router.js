@@ -126,8 +126,8 @@ export default {
         const spy = new Subject();
 
         const expected = [
-            undefined,
-            "123"
+            "123",
+            "456"
         ];
 
         const done = function() {
@@ -140,10 +140,14 @@ export default {
             .forEach(val => test.equal(val, expected.shift()));
 
         const router = createRouter({
-            "/": partial(spy, "onNext"),
-            "/foo/:id": partial(spy, "onNext")
+            "/bar": redirect("/baz/123"),
+            "/foo/:id": partial(spy, "onNext"),
+            "/baz/:id": function(id) {
+                spy.onNext(id);
+                redirect("/foo/456", true);
+            }
         });
 
-        redirect("/foo/123");
+        redirect("/bar", true);
     }
 };
