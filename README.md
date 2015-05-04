@@ -2,7 +2,7 @@
 
 A simple application router built around reactive principles.
 
-_**Note:** router-rx currently only implements browser routing via hashChange. History API (pushState) and Node.js routing to follow._
+_**Note:** router-rx currently only implements browser-based routing. Node.js routing to follow._
 
 ## Installation
 
@@ -43,9 +43,13 @@ Create a new router, mapping path strings to handler functions. Handler function
 
 Create a handler function that redirects to a specified `path`. If `invoke` is true, the handler is called immediately.
 
+`void useHistory( Boolean value );`
+
+Enable/disable use of the HTML5 History API. router-rx uses hashChange by default and will only attempt to use the History API if it is supported.
+
 ## TODO
 
-* History API
+* Nested routers
 * Node.js routing
 
 ## License

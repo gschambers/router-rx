@@ -1,6 +1,6 @@
 {
   "name": "router-rx",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Router powered by Rx",
   "main": "lib/index.js",
   "scripts": {
