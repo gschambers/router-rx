@@ -3,8 +3,27 @@ import {
     Observable,
     SerialDisposable } from "rx";
 
+const SUPPORTS_HISTORY_API = window.history && "pushState" in window.history;
+
 const PARAM = /:[^\/]+/g;
 const TRAILING_SLASHES = /\/*$/;
+const EMPTY = /^$/;
+
+const HASH_PREFIX = /^#!?\/*/;
+const PATH_PREFIX = /^\/*/;
+
+/**
+ * @internal
+ * @type {Boolean}
+ */
+export let shouldUseHistory = false;
+
+/** @param {Boolean} value */
+export const useHistory = function(value) {
+    if (SUPPORTS_HISTORY_API) {
+        shouldUseHistory = value;
+    }
+};
 
 /**
  * @internal
@@ -29,8 +48,10 @@ export const compileRoutes = function(routes) {
  * @internal
  * @return {String}
  */
-export const getURLPath = function() {
-    return location.hash.replace(/^#!?\/*/, "/");
+export const getHashPath = function() {
+    return location.hash
+        .replace(HASH_PREFIX, "/")
+        .replace(EMPTY, "/");
 };
 
 /**
@@ -39,8 +60,28 @@ export const getURLPath = function() {
  */
 export const observeHashChange = function() {
     return Observable.fromEvent(window, "hashchange")
-        .map(getURLPath)
-        .startWith(getURLPath());
+        .map(getHashPath)
+        .startWith(getHashPath());
+};
+
+/**
+ * @internal
+ * @return {String}
+ */
+export const getURLPath = function() {
+    return location.pathname.replace(PATH_PREFIX, "/");
+};
+
+/**
+ * @internal
+ * @return {Rx.Observable}
+ */
+export const observeStateChange = function() {
+    return Observable.merge(
+        Observable.fromEvent(window, "popstate"),
+        Observable.fromEvent(window, "pushstate"))
+            .map(getURLPath)
+            .startWith(getURLPath());
 };
 
 /**
@@ -83,8 +124,13 @@ export const createRouter = function(routes) {
 
     routes = compileRoutes(routes);
 
+    const source = shouldUseHistory ?
+        observeStateChange() :
+        observeHashChange();
+
     const subscription =
-        observeHashChange()
+        source
+            .distinctUntilChanged()
             .map(path => matchRoute(routes, path))
             .filter(isValidHandler)
             .forEach(handler => {
@@ -104,7 +150,16 @@ export const createRouter = function(routes) {
  */
 export const redirect = function(path, invoke=false) {
     const controller = function() {
-        location.hash = path;
+        if (shouldUseHistory) {
+            if (path !== getURLPath()) {
+                history.pushState(null, null, path);
+                const evt = document.createEvent("Event");
+                evt.initEvent("pushstate", true, true);
+                window.dispatchEvent(evt);
+            }
+        } else {
+            location.hash = path;
+        }
     };
 
     if (!invoke) {

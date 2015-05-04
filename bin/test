@@ -2,6 +2,14 @@
 
 process.env.NODE_ENV = "test";
 
+var jsdom = require("jsdom").jsdom;
+
+global.window = jsdom("<html><body></body></html>").parentWindow;
+global.document = window.document;
+global.Event = window.Event;
+global.history = window.history;
+global.location = window.location;
+
 var nodeunit = require("nodeunit");
 var path = require("path");
 var reporter = nodeunit.reporters.default;

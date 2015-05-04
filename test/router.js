@@ -1,61 +1,115 @@
-import { jsdom } from "jsdom";
 import { Observable, Scheduler, Subject } from "rx";
 import {
     compileRoutes,
     createRouter,
+    getHashPath,
     getURLPath,
     matchRoute,
     observeHashChange,
-    redirect } from "../src";
-
-global.window = jsdom("<html><body></body></html>").parentWindow;
-global.document = window.document;
-global.location = window.location;
+    observeStateChange,
+    redirect,
+    shouldUseHistory,
+    useHistory } from "../src";
 
 const partial = function(obj, method, ...args) {
     return obj[method].bind(obj, ...args);
 };
 
+const testObserveChange = function(test, source) {
+    const expected = [
+        "/",
+        "/foo/123",
+        "/bar/123"
+    ];
+
+    Observable.from(expected.slice(1))
+        .observeOn(Scheduler.timeout)
+        .forEach(path => redirect(path, true));
+
+    source
+        .take(3)
+        .doOnCompleted(() => test.done())
+        .forEach(path => test.equal(path, expected.shift()));
+};
+
+const testCreateRouter = function(test) {
+    const spy = new Subject();
+
+    const expected = [
+        undefined,
+        "123",
+        "456"
+    ];
+
+    const done = function() {
+        router.dispose();
+        test.done();
+    };
+
+    spy.take(3)
+        .doOnCompleted(done)
+        .forEach(val => test.equal(val, expected.shift()));
+
+    const router = createRouter({
+        "/": partial(spy, "onNext"),
+        "/foo/:id": partial(spy, "onNext"),
+        "/bar/:id": partial(spy, "onNext")
+    });
+
+    const paths = [
+        "/invalid/path",
+        "/foo/123",
+        "/invalid/path",
+        "/bar/456"
+    ];
+
+    Observable.from(paths)
+        .observeOn(Scheduler.timeout)
+        .forEach(path => redirect(path, true));
+};
+
 export default {
     tearDown(next) {
+        useHistory(false);
         location.hash = "";
+        location.href = "/";
         next();
     },
 
-    testGetURLPath(test) {
+    testGetHashPath(test) {
         location.hash = "#!/foo/123";
-        test.equal(getURLPath(), "/foo/123");
+        test.equal(getHashPath(), "/foo/123");
 
         location.hash = "#//bar/123";
-        test.equal(getURLPath(), "/bar/123");
+        test.equal(getHashPath(), "/bar/123");
 
         location.hash = "/baz/123";
-        test.equal(getURLPath(), "/baz/123");
+        test.equal(getHashPath(), "/baz/123");
 
         location.hash = "#quux/123";
-        test.equal(getURLPath(), "/quux/123");
+        test.equal(getHashPath(), "/quux/123");
 
         location.hash = "blah/123";
-        test.equal(getURLPath(), "/blah/123");
+        test.equal(getHashPath(), "/blah/123");
 
         test.done();
     },
 
+    testGetURLPath(test) {
+        location.href = "/foo/123";
+        test.equal(getURLPath(), "/foo/123");
+        test.done();
+    },
+
     testObserveHashChange(test) {
-        const expected = [
-            "/",
-            "/foo/123",
-            "/bar/123"
-        ];
+        test.strictEqual(shouldUseHistory, false);
+        testObserveChange(test, observeHashChange());
+    },
 
-        Observable.from(expected.slice(1))
-            .observeOn(Scheduler.timeout)
-            .forEach(path => location.hash = path);
-
-        observeHashChange()
-            .take(3)
-            .doOnCompleted(() => test.done())
-            .forEach(path => test.equal(path, expected.shift()));
+    testObserveStateChange(test) {
+        useHistory(true);
+        test.strictEqual(shouldUseHistory, true);
+        testObserveChange(test, observeStateChange());
     },
 
     testMatchRoute(test) {
@@ -86,40 +140,15 @@ export default {
         test.done();
     },
 
-    testCreateRouter(test) {
-        const spy = new Subject();
+    testCreateRouterWithHashChange(test) {
+        test.strictEqual(shouldUseHistory, false);
+        testCreateRouter(test);
+    },
 
-        const expected = [
-            undefined,
-            "123",
-            "456"
-        ];
-
-        const done = function() {
-            router.dispose();
-            test.done();
-        };
-
-        spy.take(3)
-            .doOnCompleted(done)
-            .forEach(val => test.equal(val, expected.shift()));
-
-        const router = createRouter({
-            "/": partial(spy, "onNext"),
-            "/foo/:id": partial(spy, "onNext"),
-            "/bar/:id": partial(spy, "onNext")
-        });
-
-        const paths = [
-            "/invalid/path",
-            "/foo/123",
-            "/invalid/path",
-            "/bar/456"
-        ];
-
-        Observable.from(paths)
-            .observeOn(Scheduler.timeout)
-            .forEach(path => location.hash = path);
+    testCreateRouterWithHistory(test) {
+        useHistory(true);
+        test.strictEqual(shouldUseHistory, true);
+        testCreateRouter(test);
     },
 
     testRedirect(test) {
