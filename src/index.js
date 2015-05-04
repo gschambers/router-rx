@@ -13,7 +13,7 @@ const HASH_PREFIX = /^#!?\/*/;
 const PATH_PREFIX = /^\/*/;
 
 /**
- * @internal
+ * @private
  * @type {Boolean}
  */
 export let shouldUseHistory = false;
@@ -26,7 +26,7 @@ export const useHistory = function(value) {
 };
 
 /**
- * @internal
+ * @private
  * @param {Object<String, Function>} routes
  * @return {Array<[RegExp, Function]>}
  */
@@ -45,7 +45,7 @@ export const compileRoutes = function(routes) {
 };
 
 /**
- * @internal
+ * @private
  * @return {String}
  */
 export const getHashPath = function() {
@@ -55,7 +55,7 @@ export const getHashPath = function() {
 };
 
 /**
- * @internal
+ * @private
  * @return {Rx.Observable}
  */
 export const observeHashChange = function() {
@@ -65,7 +65,7 @@ export const observeHashChange = function() {
 };
 
 /**
- * @internal
+ * @private
  * @return {String}
  */
 export const getURLPath = function() {
@@ -73,7 +73,7 @@ export const getURLPath = function() {
 };
 
 /**
- * @internal
+ * @private
  * @return {Rx.Observable}
  */
 export const observeStateChange = function() {
@@ -85,7 +85,7 @@ export const observeStateChange = function() {
 };
 
 /**
- * @internal
+ * @private
  * @param {[RegExp, Function]} routes
  * @param {String}
  * @return {Array}
@@ -107,6 +107,7 @@ export const matchRoute = function(routes, path) {
 };
 
 /**
+ * @private
  * @param {Array} handler
  * @return {Boolean}
  */
