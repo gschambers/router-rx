@@ -4,7 +4,7 @@
   "description": "Router powered by Rx",
   "main": "lib/index.js",
   "scripts": {
-    "test": "node ./bin/test"
+    "test": "eslint src && node ./bin/test"
   },
   "author": "Gary Chambers <gary@lipsmack.co.uk>",
   "license": "MIT",
@@ -17,6 +17,8 @@
   },
   "devDependencies": {
     "babel": "^5.1.10",
+    "babel-eslint": "^3.0.1",
+    "eslint": "^0.20.0",
     "jsdom": "^3.0.0",
     "nodeunit": "^0.9.1"
   }
