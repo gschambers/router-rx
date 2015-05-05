@@ -86,6 +86,34 @@ export const observeStateChange = function() {
 
 /**
  * @private
+ * @param {String} value
+ * @return {Boolean}
+ */
+const isNumber = function(value) {
+    return value !== "" && value !== null && !isNaN(value);
+};
+
+/**
+ * @private
+ * @param {Array<String>} rawParams
+ * @return {Array}
+ */
+const parseParams = function(rawParams) {
+    const params = [];
+
+    while (rawParams.length) {
+        let param = rawParams.shift();
+
+        if (isNumber(param)) {
+            params.push(+param);
+        }
+    }
+
+    return params;
+};
+
+/**
+ * @private
  * @param {[RegExp, Function]} routes
  * @param {String}
  * @return {Array}
@@ -99,7 +127,8 @@ export const matchRoute = function(routes, path) {
         let match = pattern.exec(path);
 
         if (match) {
-            return [fn].concat(match.slice(1));
+            let params = parseParams(match.slice(1));
+            return [fn].concat(params);
         }
 
         i++;

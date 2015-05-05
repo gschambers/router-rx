@@ -37,8 +37,8 @@ const testCreateRouter = function(test) {
 
     const expected = [
         undefined,
-        "123",
-        "456"
+        123,
+        456
     ];
 
     const done = function() {
@@ -48,7 +48,7 @@ const testCreateRouter = function(test) {
 
     spy.take(3)
         .doOnCompleted(done)
-        .forEach(val => test.equal(val, expected.shift()));
+        .forEach(val => test.strictEqual(val, expected.shift()));
 
     const router = createRouter({
         "/": partial(spy, "onNext"),
@@ -155,8 +155,8 @@ export default {
         const spy = new Subject();
 
         const expected = [
-            "123",
-            "456"
+            123,
+            456
         ];
 
         const done = function() {
@@ -166,12 +166,12 @@ export default {
 
         spy.take(2)
             .doOnCompleted(done)
-            .forEach(val => test.equal(val, expected.shift()));
+            .forEach(val => test.strictEqual(val, expected.shift()));
 
         const router = createRouter({
             "/bar": redirect("/baz/123"),
             "/foo/:id": partial(spy, "onNext"),
-            "/baz/:id": function(id) {
+            "/baz/:id": id => {
                 spy.onNext(id);
                 redirect("/foo/456", true);
             }
