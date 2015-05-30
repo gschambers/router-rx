@@ -105,8 +105,10 @@ const parseParams = function(rawParams) {
         let param = rawParams.shift();
 
         if (isNumber(param)) {
-            params.push(+param);
+            param = +param;
         }
+
+        params.push(param);
     }
 
     return params;

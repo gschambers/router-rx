@@ -140,6 +140,25 @@ export default {
         test.done();
     },
 
+    testParseParameters(test) {
+        const routes = compileRoutes({
+            "/foo/:param": () => {}
+        });
+
+        const paths = [
+            { value: "/foo/123", expected: 123 },
+            { value: "/foo/bar", expected: "bar" }
+        ];
+
+        while (paths.length) {
+            let path = paths.shift();
+            let handler = matchRoute(routes, path.value);
+            test.strictEqual(path.expected, handler && handler[1]);
+        }
+
+        test.done();
+    },
+
     testCreateRouterWithHashChange(test) {
         test.strictEqual(shouldUseHistory, false);
         testCreateRouter(test);
